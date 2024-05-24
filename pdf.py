@@ -9,10 +9,8 @@ import os
 
 def generate_pdf(data, directory):
     pdf_filename = os.path.join(directory, f"{data['transcript']['id']}.pdf")
-
     doc = SimpleDocTemplate(pdf_filename, pagesize=letter)
     elements = []
-
     # HEADER
     styles = getSampleStyleSheet()
     header = Paragraph("Program Studi Sistem dan Teknologi Informasi<br/>Sekolah Teknik Elektro dan Informatika<br/>Institut Teknologi Bandung", styles["Heading2"])
@@ -80,7 +78,8 @@ def generate_encrypted_pdf(data, directory, key):
     encrypted_content = cipher.encrypt(pad(pdf_content, AES.block_size))
 
     # GENERATE ENCRYPTED PDF
-    txt_filename = os.path.splitext(os.path.basename(pdf_path))[0] + '.txt'
+    # txt_filename = os.path.splitext(os.path.basename(pdf_path))[0] + '.txt'
+    txt_filename = os.path.splitext(os.path.basename(pdf_path))[0] 
     txt_path = os.path.join(directory, txt_filename)
 
     with open(txt_path, 'wb') as txt_file:
@@ -89,11 +88,13 @@ def generate_encrypted_pdf(data, directory, key):
     return txt_path
 
 
+
+
 if __name__ == '__main__':
     data = {
     'transcript': {
-        'id': 'abc111',
-        'name': 'John Deacon',
+        'id': 'abc777',
+        'name': 'Luck Number Seven',
         'subject_list': [
             {'id': 'math101', 'name': 'Mathematics 101', 'grade': 'A', 'credit': '4'},
             {'id': 'eng101', 'name': 'English 101', 'grade': 'B', 'credit': '3'},
@@ -111,4 +112,4 @@ if __name__ == '__main__':
     'signature': 'NDQyMzQ4MzAzNTg2MyA1MDYyNTE1NTQzMTQyIDc4NjI4NTk3MDgyMDMgNzg5NjIxMjIxNDk0NSA2MTg3NDQ2MTgyMTYzIDc4NjcyNzcwNjU5MTkgNDM4MDE1MzgwNzUzOSA3NTUwMjE3NDcwMTU5IDU2NTg0MjA1NjYzMjUgMTgyOTAwODE3ODUzMyA1MDA1NTgyNjc3NzkyIDc0NTMxMTI5Njc0MTAgNzcxMTg0ODg5MjcwNSAzNTE4NjY0OTYyMzg1IDQwNTEzODQ5NTUzNzYgNDU3NjIwMzU1Mzc5MSA='
     }
 
-    generate_encrypted_pdf(data, 'pdf', 'MADE_BY_RAFI_HAIDAR_RADITYA_AZKA')
+    generate_encrypted_pdf(data, 'pdf_storage', 'MADE_BY_RAFI_HAIDAR_RADITYA_AZKA')

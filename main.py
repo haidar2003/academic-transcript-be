@@ -1,8 +1,8 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from .models import *
-from .academic_transcript import *
+from models import *
+from academic_transcript import *
 import uvicorn
 import json
 import os
@@ -52,8 +52,14 @@ async def get_key():
 async def validate(signature_data: SignatureValidation):
     return validate_signature(signature_data)
 
-# @app.get("/pdf")
+@app.post("/pdf/encrypted")
+async def download_encrypted_pdf(request : PDFRequest):
+    
+    return send_encrypted_pdf(request.nim)
 
+@app.post("/pdf/decrypted")
+async def download_decrypted_pdf(request : UploadFile):
+    return await send_decrypted_pdf(request)
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=80)

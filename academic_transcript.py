@@ -1,9 +1,15 @@
 import base64
 import hashlib
 import json
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile
+from fastapi.responses import FileResponse
+import binascii
 from models import *
 from cryptography import *
+from pdf import *
+from Crypto.Cipher import AES
+import os
+
 
 RC4_KEY = '18221134_18221152'
 AES_KEY = 'MADE_BY_RAFI_HAIDAR_RADITYA_AZKA'
@@ -48,7 +54,7 @@ def genereate_signature(transcript: Transcript, exponent_pri, modulus, gpa) -> s
         ]),
     ])
 
-    hashed_transcript = hashlib.sha3_256(transcript_str.encode()).hexdigest()
+    hashed_transcript = binascii.hexlify(Sha3.keccak_hash(transcript_str.encode())).decode()
 
     signature = rsa.custom_generate_signature(hashed_transcript, exponent_pri, modulus, 4)
 
@@ -60,7 +66,6 @@ def genereate_signature(transcript: Transcript, exponent_pri, modulus, gpa) -> s
 def generate_rsa_key():
     key_data = load_json('key')
 
-    print(key_data)
 
     next_id = 1
 
@@ -243,7 +248,8 @@ def validate_signature(signature_data: SignatureValidation) -> SignatureResponse
         ])
     ])
 
-    hashed_transcript = hashlib.sha3_256(transcript_str.encode()).hexdigest()
+    hashed_transcript = binascii.hexlify(Sha3.keccak_hash(transcript_str.encode())).decode()
+
 
     # b64 -> str
     signature = base64.b64decode(signature).decode("latin1")
@@ -257,28 +263,53 @@ def validate_signature(signature_data: SignatureValidation) -> SignatureResponse
         return SignatureResponse(result=f'Hasil hash tidak cocok, tanda tangan TIDAK VALID')
 
 # TRANSCRIPT PDF
+def send_encrypted_pdf(nim):
+    transcript_data = next((transcript for transcript in load_json('transcript') if rc4.custom_rc4(False, transcript['transcript']['id'], RC4_KEY) == nim), None)
+    if transcript_data is None:
+        return HTTPException(status_code=404)
+
+    for subject in transcript_data['transcript']['subject_list']:
+        subject['id'] = rc4.custom_rc4(False, subject['id'], RC4_KEY)
+        subject['name'] = rc4.custom_rc4(False, subject['name'], RC4_KEY)
+        subject['grade'] = rc4.custom_rc4(False, subject['grade'], RC4_KEY)
+        subject['credit'] = rc4.custom_rc4(False, subject['credit'], RC4_KEY)
+
+    filepath = generate_encrypted_pdf(transcript_data, "pdf_storage", AES_KEY)
 
 
+
+    return  FileResponse(filepath, media_type="application/octet-stream") 
+    # return filepath
+
+async def send_decrypted_pdf(encrypted_file ):
+    encrypted_byte = await encrypted_file.read()
+    cipher = AES.new(AES_KEY.encode(), AES.MODE_ECB)
+    decrypted_content = cipher.decrypt(encrypted_byte)
+    filepath = os.path.join("pdf_storage", "output.pdf")
+    with open(filepath, 'wb') as file:
+        file.write(decrypted_content)
+
+    return FileResponse(filepath, media_type="application/pdf", filename="output.pdf")
 # TESTING
 if __name__ == "__main__":
-    dummy_transcript_data = Transcript(
-    id="abc222",
-    name="Preston Garvey",
-    subject_list=[
-        Subject(id="math101", name="Mathematics 101", grade="A", credit="4"),
-        Subject(id="eng101", name="English 101", grade="A", credit="3"),
-        Subject(id="phy101", name="Physics 101", grade="A", credit="4"),
-        Subject(id="chem101", name="Chemistry 101", grade="A", credit="4"),
-        Subject(id="comp101", name="Computer Science 101", grade="A", credit="4"),
-        Subject(id="hist101", name="History 101", grade="A", credit="3"),
-        Subject(id="bio101", name="Biology 101", grade="A", credit="4"),
-        Subject(id="eco101", name="Economics 101", grade="B", credit="3"),
-        Subject(id="art101", name="Art 101", grade="A", credit="3"),
-        Subject(id="mus101", name="Music 101", grade="C", credit="3"),
-    ]
-)
-
-    create_transcript(dummy_transcript_data)
+#     dummy_transcript_data = Transcript(
+#     id="abc666",
+#     name="Piper Wright",
+#     subject_list=[
+#         Subject(id="math101", name="Mathematics 101", grade="A", credit="4"),
+#         Subject(id="eng101", name="English 101", grade="A", credit="3"),
+#         Subject(id="phy101", name="Physics 101", grade="A", credit="4"),
+#         Subject(id="chem101", name="Chemistry 101", grade="A", credit="4"),
+#         Subject(id="comp101", name="Computer Science 101", grade="A", credit="4"),
+#         Subject(id="hist101", name="History 101", grade="A", credit="3"),
+#         Subject(id="bio101", name="Biology 101", grade="A", credit="4"),
+#         Subject(id="eco101", name="Economics 101", grade="B", credit="3"),
+#         Subject(id="art101", name="Art 101", grade="A", credit="3"),
+#         Subject(id="mus101", name="Music 101", grade="C", credit="3"),
+#     ]
+#   )
+    # print(len(Sha3.keccak_hash(Sha3.keccak_hash(Sha3.keccak_hash(b'\x12')))))
+    # create_transcript(dummy_transcript_data)
     # print(get_transcript().model_dump())
 
 
@@ -286,7 +317,7 @@ if __name__ == "__main__":
     # print(get_transcript_encrpted())
     # print(get_transcript_encrpted_all())
 
-    test = SignatureValidation(signature_type='encrypted', signature='P+TIJuxKWoYCUbvB03KVWYmUZqCyFz8bc9JALg8we4gccimjU8xHdBeFJbU8LDl8VNwfg3ICTxvzxZFJq0z1d5o1BNaEdcOyrGxNfZ25x+TMvhfUcAhY4neP7UVwJLk3QoxFkb1g7boIkTs/44HsKcilP3JAp7OE5ajz50MFZGSbU8qQVsIKm6TuAT+0pln5uYCUI2DEHJTm9rOJS6jBNHBSU2WmiF2FKI91WyCb2sUkni6/cg043JfFey3o13dGB1l7m8k9cS9v4eeapYyYoyKEOgP9fRlJQyJv5IuTtz6ca/GdVlBrTCKAkRt4WYiBq6wo7bh1mvAFV2asN681RjEFocsjOIuD0GWjk+q4QvuRmIUt+67JFbC7H0EinBwsRZfl5BfKtkcrTMrp', id='abc111')
-    print(validate_signature(test))
-
+    # test = SignatureValidation(signature_type='encrypted', signature='P9rMJex0TocBQbuL00yRWYqEZqCxBy9ScsJELA8Oc4ofTDnoU8xHcxarIbM9LAs4VNwtznACaRvwxb8Lq1zlO5gLHJqEZf2zr2xNfZ6H9ebMgA/TcwhU43Sx4QpwJLkwQbJv2L1O37cJvwk/4ZHsKci1EXZDp5WH5ZbZpUMFZGSaU8qRVsIOm6TQFT20plH3uoCYbGDEAJLn9o3BSLjFf3BsSy6ltl2FKLFDWCKb/MomoDr0cCMOkpX/ey/o+X9FB3dd18kDcWZsz8HQpYyY6iOUHE79fRVOQhxv4IuTlT6ce9uSVlBnTSKAlVl7Z77Eq5Yoo7hlvL4FaVSpNoE9CjIFj4MjOJPF0XWj3eiWVv2SmLdj+77zFbCFIUchogxrRrnl5xT0tggrZsrp', id='abc666')
+    # print(validate_signature(test))
+    send_encrypted_pdf("abc666")
     # print(load_json('transcript'))

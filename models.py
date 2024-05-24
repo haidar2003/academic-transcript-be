@@ -39,3 +39,6 @@ class SignatureValidation(BaseModel):
 
 class SignatureResponse(BaseModel):
     result: str
+
+class PDFRequest(BaseModel):
+    nim: str
