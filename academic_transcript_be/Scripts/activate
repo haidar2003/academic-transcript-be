@@ -1,5 +1,6 @@
 # This file must be used with "source bin/activate" *from bash*
 # You cannot run it directly
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 deactivate () {
     # reset old environment variables
@@ -42,10 +43,10 @@ deactivate nondestructive
 if [ "$OSTYPE" = "cygwin" ] || [ "$OSTYPE" = "msys" ] ; then
     # transform D:\path\to\venv to /d/path/to/venv on MSYS
     # and to /cygdrive/d/path/to/venv on Cygwin
-    export VIRTUAL_ENV=$(cygpath "C:\Users\Haidar\OneDrive - Institut Teknologi Bandung\Desktop\Semester 6\KNK\TC4-BE\academic_transcript_be")
+    export VIRTUAL_ENV=$(cygpath "$SCRIPT_DIR\academic_transcript_be")
 else
     # use the path as-is
-    export VIRTUAL_ENV="C:\Users\Haidar\OneDrive - Institut Teknologi Bandung\Desktop\Semester 6\KNK\TC4-BE\academic_transcript_be"
+    export VIRTUAL_ENV="$SCRIPT_DIR\academic_transcript_be"
 fi
 
 _OLD_VIRTUAL_PATH="$PATH"

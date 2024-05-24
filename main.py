@@ -1,8 +1,8 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from models import *
-from academic_transcript import *
+from .models import *
+from .academic_transcript import *
 import uvicorn
 import json
 import os
@@ -51,6 +51,8 @@ async def get_key():
 @app.post("/signature", response_model=SignatureResponse)
 async def validate(signature_data: SignatureValidation):
     return validate_signature(signature_data)
+
+# @app.get("/pdf")
 
 if __name__ == "__main__":
     import uvicorn
