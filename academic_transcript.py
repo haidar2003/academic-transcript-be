@@ -268,17 +268,23 @@ def send_encrypted_pdf(nim):
     if transcript_data is None:
         return HTTPException(status_code=404)
 
+    transcript_data['transcript']['id'] = rc4.custom_rc4(False, transcript_data['transcript']['id'], RC4_KEY)
+    transcript_data['transcript']['name'] = rc4.custom_rc4(False, transcript_data['transcript']['name'], RC4_KEY)
+
     for subject in transcript_data['transcript']['subject_list']:
         subject['id'] = rc4.custom_rc4(False, subject['id'], RC4_KEY)
         subject['name'] = rc4.custom_rc4(False, subject['name'], RC4_KEY)
         subject['grade'] = rc4.custom_rc4(False, subject['grade'], RC4_KEY)
         subject['credit'] = rc4.custom_rc4(False, subject['credit'], RC4_KEY)
 
+    transcript_data['gpa'] = rc4.custom_rc4(False, transcript_data['gpa'], RC4_KEY)
+    transcript_data['signature'] = rc4.custom_rc4(False, transcript_data['signature'], RC4_KEY)
+
     filepath = generate_encrypted_pdf(transcript_data, "pdf_storage", AES_KEY)
 
 
 
-    return  FileResponse(filepath, media_type="application/octet-stream") 
+    return  FileResponse(filepath, media_type="application/octet-stream", filename=(transcript_data['transcript']['id'] + "_encrypted")) 
     # return filepath
 
 async def send_decrypted_pdf(encrypted_file ):
@@ -288,8 +294,8 @@ async def send_decrypted_pdf(encrypted_file ):
     filepath = os.path.join("pdf_storage", "output.pdf")
     with open(filepath, 'wb') as file:
         file.write(decrypted_content)
-
-    return FileResponse(filepath, media_type="application/pdf", filename="output.pdf")
+    input_file_name = encrypted_file.filename
+    return FileResponse(filepath, media_type="application/pdf", filename=input_file_name + "_decrypted.pdf")
 # TESTING
 if __name__ == "__main__":
 #     dummy_transcript_data = Transcript(
