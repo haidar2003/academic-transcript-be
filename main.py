@@ -60,6 +60,7 @@ async def download_encrypted_pdf(request : PDFRequest):
 @app.post("/pdf/decrypted")
 async def download_decrypted_pdf(request : UploadFile):
     return await send_decrypted_pdf(request)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=80)

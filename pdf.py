@@ -21,7 +21,7 @@ def generate_pdf(data, directory):
     # P1
     elements.append(Paragraph("Transkrip Akademik", styles["Heading3"]))
     name = Paragraph(f"Nama: {data['transcript']['name']}", styles["BodyText"])
-    nim = Paragraph(f"NIM: {data['transcript']['id']}", styles["BodyText"])
+    nim = Paragraph(f"NIM: {data['transcript']['id']}<br/><br/>", styles["BodyText"])
     elements.append(name)
     elements.append(nim)
 
@@ -49,8 +49,8 @@ def generate_pdf(data, directory):
 
     # P2
     total_credits = sum(int(subject['credit']) for subject in data['transcript']['subject_list'])
-    elements.append(Paragraph(f"Total Jumlah SKS = {total_credits}", styles["BodyText"]))
-    elements.append(Paragraph(f"IPK = {data['gpa']}", styles["BodyText"]))
+    elements.append(Paragraph(f"<br/>Total Jumlah SKS = {total_credits}", styles["BodyText"]))
+    elements.append(Paragraph(f"IPK = {data['gpa']}<br/><br/>", styles["BodyText"]))
 
     # FOOTER
     elements.append(Paragraph("Ketua Program Studi", styles["BodyText"]))

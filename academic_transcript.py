@@ -10,7 +10,6 @@ from pdf import *
 from Crypto.Cipher import AES
 import os
 
-
 RC4_KEY = '18221134_18221152'
 AES_KEY = 'MADE_BY_RAFI_HAIDAR_RADITYA_AZKA'
 
@@ -106,7 +105,7 @@ def create_transcript(transcript: Transcript):
 
     existing_id = set(rc4.custom_rc4(False, transcript['transcript']['id'], RC4_KEY) for transcript in transcript_data)
     if transcript.id in existing_id:
-        raise HTTPException(status_code=400, detail=f"Student {transcript.id} already exists")
+        raise HTTPException(status_code=400, detail=f"Mahasiswa dengan NIM {transcript.id} sudah ada")
 
     exponent_pri = key_data[-1]['exponent_pri']
     modulus = key_data[-1]['modulus']
@@ -207,7 +206,6 @@ def read_transcript_encrpted_all() -> TranscriptList:
   return TranscriptList(transcript_list=view_transcripts)
 
 # SIGNATURE VALIDATION
-# TOLONG TAMBAH TRY-CATCH BAUT B64 GAK VALID
 def validate_signature(signature_data: SignatureValidation) -> SignatureResponse:
     transcript_data = next((transcript for transcript in load_json('transcript') if rc4.custom_rc4(False, transcript['transcript']['id'], RC4_KEY) == signature_data.id), None)
 
@@ -258,9 +256,9 @@ def validate_signature(signature_data: SignatureValidation) -> SignatureResponse
     hashed_transcript_received = rsa.custom_validate_signature(signature, key_data['exponent_pub'], key_data['modulus'], 4)
 
     if hashed_transcript_received == hashed_transcript:
-        return SignatureResponse(result=f'Hasil hash cocok, tanda tangan VALID')
+        return SignatureResponse(result=f'HASIL HASH COCOK, TANDA TANGAN VALID')
     else:
-        return SignatureResponse(result=f'Hasil hash tidak cocok, tanda tangan TIDAK VALID')
+        return SignatureResponse(result=f'HASIL HASH TIDAK COCOK, TANDA TANGAN TIDAK VALID')
 
 # TRANSCRIPT PDF
 def send_encrypted_pdf(nim):
@@ -300,7 +298,7 @@ async def send_decrypted_pdf(encrypted_file ):
 if __name__ == "__main__":
 #     dummy_transcript_data = Transcript(
 #     id="abc666",
-#     name="Piper Wright",
+#     name="Nick Valentine From Fallout 4",
 #     subject_list=[
 #         Subject(id="math101", name="Mathematics 101", grade="A", credit="4"),
 #         Subject(id="eng101", name="English 101", grade="A", credit="3"),
