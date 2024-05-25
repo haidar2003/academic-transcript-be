@@ -38,6 +38,7 @@ Apabila ingin menjalankan server di mesin lokal:
    >  pip install -r requirements.txt  
 4. Jalankan berkas gui.py, apabila menggunakan command prompt, ketik
    >  python main.py
+5. Akses localhost/docs di peramban web
 
 # Petunjuk Penggunaan
 Pada dokumentasi FastAPI:
