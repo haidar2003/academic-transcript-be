@@ -5,8 +5,8 @@
 https://academic-trascript.azurewebsites.net/docs#/
 
 # Dibuat Oleh
-Muhammad Rafi Haidar - 18221134
-Raditya Azka Prabaswara - 18221152
+1. Muhammad Rafi Haidar - 18221134
+2. Raditya Azka Prabaswara - 18221152
  
 # Deskripsi
 Program ini merupakan aplikasi backend dari aplikasi tugas 4. Program utama menjalankan server Uvicorn dengan framework FastAPI yang dapat diakses di pranala di atas.
@@ -17,15 +17,15 @@ Repository juga memuat implementasi algoritma RSA, RC4, dan SHA-3 di direktori c
 
 # Fitur
 Program ini memiliki kemampuan untuk:
-a) Membangkitkan kunci publik dan kunci privat RSA;
-b) Membangkitan tanda tangan digital (signing) dengan algoritma hash SHA-3 dan RSA;
-c) Memverifikasi tanda tangan digital (verifying);
-d) Memasukkan data akademik;
-e) Mengenkripsi dan mendekripsi field basis data dengan algoritma RC4;
-f) Mengenkripsi field basis data yang sudah ditandatangani;
-g) Menampilkan isi basis data ke layar (plaintext dan ciphertext);
-h) Membuat laporan transkrip akademik setiap mahasiswa dan menyimpan dalam bentuk file PDF yang dienkripsi dengan algoritma AES; dan
-i) Mendekripsi file laporan akademik kembali ke format PDF.
+1. Membangkitkan kunci publik dan kunci privat RSA;
+2. Membangkitan tanda tangan digital (signing) dengan algoritma hash SHA-3 dan RSA;
+3. Memverifikasi tanda tangan digital (verifying);
+4. Memasukkan data akademik;
+5. Mengenkripsi dan mendekripsi field basis data dengan algoritma RC4;
+6. Mengenkripsi field basis data yang sudah ditandatangani;
+7. Menampilkan isi basis data ke layar (plaintext dan ciphertext);
+8. Membuat laporan transkrip akademik setiap mahasiswa dan menyimpan dalam bentuk file PDF yang dienkripsi dengan algoritma AES; dan
+9. Mendekripsi file laporan akademik kembali ke format PDF.
 
 # Petunjuk Instalasi
 Apabila ingin mengakses server melalui internet tanpa melakukan instalasi kunjungi 
