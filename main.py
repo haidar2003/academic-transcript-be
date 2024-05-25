@@ -12,6 +12,7 @@ from cryptography import *
 origins = [
     "http://localhost:80",
     "http://localhost:5173",
+    "https://academic-transcript-fe.vercel.app/"
 ]
 
 app = FastAPI()
